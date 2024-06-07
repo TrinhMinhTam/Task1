@@ -26,10 +26,12 @@
   padding: 10px;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .task h3 {
   margin-bottom: 5px; /* Thêm margin dưới tiêu đề */
+  margin: 10px;
 }
 
 input[type="radio"] {
