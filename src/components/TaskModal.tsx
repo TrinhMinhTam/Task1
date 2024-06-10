@@ -6,17 +6,26 @@ interface TaskModalProps {
   task: TaskType;
   onMove?: (newColumnIndex: number) => void;
   onClick?: () => void;
-  onClose?: () => void;
+  onClose: () => void;
+  onSave: (updatedTask:TaskType,newColumnIndex:number) => void;
 }
 
 
-const TaskModal: React.FC<TaskModalProps> = ({ task, onMove, onClick, onClose }) => {
+const TaskModal: React.FC<TaskModalProps> = ({ task, onMove, onClick, onClose, onSave }) => {
   const [selectedOption, setSelectedOption] = useState(task.defaultDropdownValue);
 
+  const [newColumnIndex, setNewColumnIndex] = useState<number | null>(null);
+
   const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newColumnIndex = e.target.selectedIndex;
+  const selectedIndex = e.target.selectedIndex;
     setSelectedOption(e.target.value);
-    // onMove(newColumnIndex);
+    setNewColumnIndex(selectedIndex);
+  };
+
+  const handleSave = () => {
+    if (onSave && newColumnIndex !== null) {
+      onSave({ ...task, defaultDropdownValue: selectedOption }, newColumnIndex);
+    }
   };
 
   return (
@@ -33,8 +42,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, onMove, onClick, onClose })
         >
           {task.dropdownOptions.map((option, index) => (
             <option key={index} value={option.value}>{option.value}</option>
+            
           ))}
         </select>
+        <br></br>
+        <button onClick={handleSave}>Lưu</button>
       </div>
     </div>
   );

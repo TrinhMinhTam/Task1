@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Column from './Column';
-import { initialData } from './Data'; // Import initialData from Data.tsx
+import { TaskType, initialData } from './Data'; // Import initialData from Data.tsx
 
 const Board: React.FC = () => {
   const [columns, setColumns] = useState(initialData); // Use initialData from Data.tsx
@@ -14,7 +14,29 @@ const Board: React.FC = () => {
       return newColumns;
     });
   };
+  const handleTaskSave = (updatedTask: TaskType, newColumnIndex: number) => {
+    setColumns(prevColumns => {
+      const newColumns = prevColumns.map(column => ({
+        ...column,
+        tasks: column.tasks.map(task =>
+          task.id === updatedTask.id ? updatedTask : task
+        ),
+      }));
 
+      const currentColumnIndex = newColumns.findIndex(column =>
+        column.tasks.some(task => task.id === updatedTask.id)
+      );
+
+      if (currentColumnIndex !== -1 && currentColumnIndex !== newColumnIndex) {
+        const taskIndex = newColumns[currentColumnIndex].tasks.findIndex(task => task.id === updatedTask.id);
+        const [movedTask] = newColumns[currentColumnIndex].tasks.splice(taskIndex, 1);
+        newColumns[newColumnIndex].tasks.push(movedTask);
+      }
+
+      console.log('New columns after task save:', newColumns); // Log new columns after task save
+      return newColumns;
+    });
+  };
   return (
     <div className="board">
       {columns.map((column, columnIndex) => (
@@ -26,8 +48,8 @@ const Board: React.FC = () => {
             console.log('Task move initiated:', columnIndex, taskIndex, newColumnIndex); // Log task move initiation
             handleTaskMove(columnIndex, taskIndex, newColumnIndex);
           }}
+          onTaskSave={handleTaskSave} // Pass the handleTaskSave function to Column
           onTaskTick={() => { console.log('Task ticked!'); }} // Log task tick
-          // onTaskClick={() => { console.log('Task clicked!'); }} // Log task click
           columnIndex={columnIndex} // Add columnIndex
           isLastColumn={columnIndex === columns.length - 1} // Add isLastColumn
         />

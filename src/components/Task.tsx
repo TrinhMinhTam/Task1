@@ -8,13 +8,9 @@ interface TaskProps {
   onClick: () => void;
   isCompleted: boolean;
 }
-
-const Task: React.FC<TaskProps> = ({ task, onTick, onMove, onClick, isCompleted }) => {
+const Task = (props:TaskProps) => {
+  const { task, onTick, onMove, onClick, isCompleted } = props;
   const [selectedOption, setSelectedOption] = useState(task.defaultDropdownValue);
-  const handleClickTask = () => {
-    console.error();
-    onClick;
-  }
   const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newColumnIndex = e.target.selectedIndex;
     setSelectedOption(e.target.value);
@@ -24,13 +20,13 @@ const Task: React.FC<TaskProps> = ({ task, onTick, onMove, onClick, isCompleted 
 
   return (
     <div className="task" onClick={onClick}>
-      <input 
+      {/* <input 
         type="radio" 
         checked={isCompleted} 
         onChange={onTick} 
         disabled={isCompleted} 
         title='Hoàn thành công việc'
-      />
+      /> */}
       <h3>{task.title}</h3>
       <p>{task.description}</p>
       {/* {!isCompleted && (

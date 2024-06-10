@@ -16,13 +16,14 @@ interface ColumnProps {
   tasks: TaskData[];
   onTaskTick: (taskIndex: number) => void;
   onTaskMove: (taskIndex: number, newColumnIndex: number) => void;
+  onTaskSave: (updateTask:TaskData, newColumnIndex: number) =>void;
   // onTaskClick: () => void;
   columnIndex: number;  
   isLastColumn: boolean;
 }
 
 const Column  = (props:ColumnProps) => {
-  const {isLastColumn,onTaskMove,onTaskTick,tasks,title} = props;
+  const {isLastColumn,onTaskMove,onTaskTick,onTaskSave,tasks,title} = props;
   const [selectedTask, setSelectedTask] = React.useState<TaskData | null>(null); // State to store selected task
   const [open,setOpen] = React.useState(false)
   const handleClickTask = (task: TaskType) => {
@@ -33,7 +34,13 @@ const Column  = (props:ColumnProps) => {
   const onCloseModal = ()=>{
     setSelectedTask(null)
     setOpen(!open)
-  }
+  };
+
+  const onSaveModal = (updatedTask:TaskData, newColumnIndex: number)=>{
+    onTaskSave(updatedTask,newColumnIndex);
+    onCloseModal();
+  };
+  
   return (
     <div className="column">
       <h2>{title}</h2>
@@ -47,7 +54,7 @@ const Column  = (props:ColumnProps) => {
           isCompleted={isLastColumn} 
         />
       ))}
-      {open ? <TaskModal task={selectedTask as any } onClose={onCloseModal} /> : <></>}
+      {open ? <TaskModal task={selectedTask as any } onClose={onCloseModal} onSave={onSaveModal}/> : <></>}
     </div>
   );
 };
