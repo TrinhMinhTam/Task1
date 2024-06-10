@@ -10,6 +10,7 @@ const Board: React.FC = () => {
       const newColumns = [...prevColumns];
       const [movedTask] = newColumns[columnIndex].tasks.splice(taskIndex, 1);
       newColumns[newColumnIndex].tasks.push(movedTask);
+      console.log('New columns after task move:', newColumns); // Log new columns after task move
       return newColumns;
     });
   };
@@ -21,9 +22,12 @@ const Board: React.FC = () => {
           key={columnIndex}
           title={column.title}
           tasks={column.tasks}
-          onTaskMove={(taskIndex, newColumnIndex) => handleTaskMove(columnIndex, taskIndex, newColumnIndex)}
-          onTaskTick={() => {}} // Add onTaskTick placeholder
-          onTaskClick={() => {}} // Add onTaskClick placeholder
+          onTaskMove={(taskIndex, newColumnIndex) => {
+            console.log('Task move initiated:', columnIndex, taskIndex, newColumnIndex); // Log task move initiation
+            handleTaskMove(columnIndex, taskIndex, newColumnIndex);
+          }}
+          onTaskTick={() => { console.log('Task ticked!'); }} // Log task tick
+          // onTaskClick={() => { console.log('Task clicked!'); }} // Log task click
           columnIndex={columnIndex} // Add columnIndex
           isLastColumn={columnIndex === columns.length - 1} // Add isLastColumn
         />

@@ -1,11 +1,13 @@
 import React from 'react';
-import Task from './Task';
+ import Task from './Task';
 import TaskModal from './TaskModal';
+import { TaskType } from './Data';
 
 export interface TaskData {
+  id: string;
   title: string;
   description: string;
-  dropdownOptions: string[];
+  dropdownOptions: {id: string; value: string; }[];
   defaultDropdownValue: string;
 }
 
@@ -14,17 +16,17 @@ interface ColumnProps {
   tasks: TaskData[];
   onTaskTick: (taskIndex: number) => void;
   onTaskMove: (taskIndex: number, newColumnIndex: number) => void;
-  onTaskClick: () => void;
+  // onTaskClick: () => void;
   columnIndex: number;  
   isLastColumn: boolean;
 }
 
-const Column: React.FC<ColumnProps> = ({ title, tasks, onTaskTick, onTaskMove, onTaskClick, columnIndex, isLastColumn }) => {
+const Column  = (props:ColumnProps) => {
+  const {isLastColumn,onTaskMove,onTaskTick,tasks,title} = props;
   const [selectedTask, setSelectedTask] = React.useState<TaskData | null>(null); // State to store selected task
   const [open,setOpen] = React.useState(false)
-  const handleClickTask = (taskIndex: number) => {
-    setSelectedTask(tasks[taskIndex]); // Set selected task
-    onTaskClick(); // Call onTaskClick to open TaskModal
+  const handleClickTask = (task: TaskType) => {
+    setSelectedTask(task); // Set selected task
     setOpen(!open)
   };
 
@@ -41,7 +43,7 @@ const Column: React.FC<ColumnProps> = ({ title, tasks, onTaskTick, onTaskMove, o
           task={task} 
           onTick={() => onTaskTick(index)} 
           onMove={(newColumnIndex) => onTaskMove(index, newColumnIndex)} 
-          onClick={() => handleClickTask(index)} 
+          onClick={() => handleClickTask(task)} 
           isCompleted={isLastColumn} 
         />
       ))}

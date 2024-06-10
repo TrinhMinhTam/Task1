@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Task } from './Data.tsx';
+import { TaskType } from './Data.tsx';
 
 
 interface TaskModalProps {
-  task: Task;
+  task: TaskType;
   onMove?: (newColumnIndex: number) => void;
   onClick?: () => void;
   onClose?: () => void;
@@ -32,7 +32,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, onMove, onClick, onClose })
           title="Select task status"
         >
           {task.dropdownOptions.map((option, index) => (
-            <option key={index} value={option}>{option}</option>
+            <option key={index} value={option.value}>{option.value}</option>
           ))}
         </select>
       </div>

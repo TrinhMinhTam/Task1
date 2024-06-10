@@ -11,7 +11,10 @@ interface TaskProps {
 
 const Task: React.FC<TaskProps> = ({ task, onTick, onMove, onClick, isCompleted }) => {
   const [selectedOption, setSelectedOption] = useState(task.defaultDropdownValue);
-
+  const handleClickTask = () => {
+    console.error();
+    onClick;
+  }
   const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newColumnIndex = e.target.selectedIndex;
     setSelectedOption(e.target.value);
