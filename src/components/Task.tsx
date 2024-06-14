@@ -1,41 +1,56 @@
 import React, { useState } from 'react';
-import { TaskData } from './Column';
+import { TaskType } from './Data';
 
 interface TaskProps {
-  task: TaskData;
-  onTick: () => void;
-  onMove: (newColumnIndex: number) => void;
-  onClick: () => void;
-  isCompleted: boolean;
+  task: TaskType;
+  // onTaskMove: (newStatus: string) => void;
+  // onTaskSave: (updatedTask: TaskType) => void;
+  onTaskTick?: () => void;
+  onClick:()=> void;
 }
-const Task = (props:TaskProps) => {
-  const { task, onTick, onMove, onClick, isCompleted } = props;
-  const [selectedOption, setSelectedOption] = useState(task.defaultDropdownValue);
-  const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newColumnIndex = e.target.selectedIndex;
-    setSelectedOption(e.target.value);
-    onMove(newColumnIndex);
+
+const Task: React.FC<TaskProps> = ({ task, onTaskTick, onClick }) => {
+  const [editing, setEditing] = useState(false);
+  const [updatedTitle, setUpdatedTitle] = useState(task.title);
+  const [selectedOption, setSelectedOption] = useState(task.status); // Sử dụng status thay vì defaultDropdownValue
+
+  const handleSave = () => {
+    const updatedTask: TaskType = {
+      ...task,
+      title: updatedTitle,
+      
+      status: selectedOption, // Cập nhật status thay vì defaultDropdownValue
+    };
+    // onTaskSave(updatedTask);
+    setEditing(false);
   };
 
+  const handleCancel = () => {
+    setUpdatedTitle(task.title);
+    setSelectedOption(task.status); // Đặt lại status khi huỷ chỉnh sửa
+    setEditing(false);
+  };
+  const handleClick = () => {
+    if (onClick) {
+      onClick(); // Gọi hàm onClick nếu nó được truyền vào
+    }
+  };
 
   return (
     <div className="task" onClick={onClick}>
-      {/* <input 
-        type="radio" 
-        checked={isCompleted} 
-        onChange={onTick} 
-        disabled={isCompleted} 
-        title='Hoàn thành công việc'
-      /> */}
-      <h3>{task.title}</h3>
-      <p>{task.description}</p>
-      {/* {!isCompleted && (
-        <DropdownButton id="dropdown-basic-button" title={task.defaultDropdownValue}>
-          {task.dropdownOptions.map((option, index) => (
-            <Dropdown.Item key={index} onClick={onTick}>{option}</Dropdown.Item>
-          ))}
-        </DropdownButton>
-      )} */}
+      {!editing ? (
+        <>
+          <div className="task-header">
+            <h3>{task.title}</h3>
+          </div>
+          <p>Trạng thái: {task.status}</p> {/* Hiển thị trạng thái thay vì defaultDropdownValue */}
+        </>
+      ) : (
+        <>
+          
+        </>
+      )}
+      {/* <button onClick={() => onTaskMove(selectedOption)}>Di chuyển task</button> */}
     </div>
   );
 };

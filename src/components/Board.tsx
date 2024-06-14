@@ -1,59 +1,95 @@
-import React, { useState } from 'react';
-import Column from './Column';
-import { TaskType, initialData } from './Data'; // Import initialData from Data.tsx
+import React, { useEffect, useState } from "react";
+import Column from "./Column";
+import { TaskType, columns, initialData } from "./Data";
+import TaskModal from "./TaskModal";
+
+// Hàm để lấy trạng thái theo id
 
 const Board: React.FC = () => {
-  const [columns, setColumns] = useState(initialData); // Use initialData from Data.tsx
+  const [tasks, setTasks] = useState<TaskType[]>(initialData);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false); // State để xác định trạng thái hiển thị của Task Modal
+  const [selectedTask, setSelectedTask] = useState<TaskType | null>(null); // Task được chọn để hiển thị trong Task Modal
 
-  const handleTaskMove = (columnIndex: number, taskIndex: number, newColumnIndex: number) => {
-    setColumns(prevColumns => {
-      const newColumns = [...prevColumns];
-      const [movedTask] = newColumns[columnIndex].tasks.splice(taskIndex, 1);
-      newColumns[newColumnIndex].tasks.push(movedTask);
-      console.log('New columns after task move:', newColumns); // Log new columns after task move
-      return newColumns;
-    });
+  const handleTaskClick = (task: TaskType) => {
+    setSelectedTask(task); // Lưu task được chọn vào state selectedTask
+    setIsTaskModalOpen(true); // Mở Task Modal
   };
-  const handleTaskSave = (updatedTask: TaskType, newColumnIndex: number) => {
-    setColumns(prevColumns => {
-      const newColumns = prevColumns.map(column => ({
-        ...column,
-        tasks: column.tasks.map(task =>
-          task.id === updatedTask.id ? updatedTask : task
-        ),
-      }));
 
-      const currentColumnIndex = newColumns.findIndex(column =>
-        column.tasks.some(task => task.id === updatedTask.id)
-      );
+  // Hàm để xử lý việc di chuyển task từ cột này sang cột khác
 
-      if (currentColumnIndex !== -1 && currentColumnIndex !== newColumnIndex) {
-        const taskIndex = newColumns[currentColumnIndex].tasks.findIndex(task => task.id === updatedTask.id);
-        const [movedTask] = newColumns[currentColumnIndex].tasks.splice(taskIndex, 1);
-        newColumns[newColumnIndex].tasks.push(movedTask);
+  useEffect(() => {
+    console.log("tasks uef: ", tasks);
+  }, [tasks]);
+  // Hàm để lưu task sau khi cập nhật
+  const handleTaskSave = (updatedTask: TaskType, status: string) => {
+    console.log("update", updatedTask);
+    const clonetask = [...tasks];
+    console.log("clonebf", tasks);
+    clonetask.map((task: TaskType) => {
+      if (task.id === updatedTask.id) {
+        task.status = status;
+        // console.log('map',task)
       }
-
-      console.log('New columns after task save:', newColumns); // Log new columns after task save
-      return newColumns;
     });
+    console.log("cloneaf", clonetask);
+    setTasks(clonetask);
+    setIsTaskModalOpen(!isTaskModalOpen);
   };
+
+  // Hàm để thêm task mới vào cột
+  const handleAddTask = () => {
+    const newTask: TaskType = {
+      id: tasks.length++,
+      title: `Task ${tasks.length++}`,
+      status: "Bắt đầu", // Hoặc giá trị mặc định tùy ý
+      userId: 1,
+    };
+    if (newTask) {
+      let clonetask: TaskType[] = [...tasks, newTask];
+      let updatedTask: TaskType[] = [];
+      clonetask.forEach((task) => {
+        if (task) {
+          updatedTask.push(task);
+        }
+      });
+      console.log("clonebf", updatedTask);
+      setTasks(updatedTask);
+    }
+  };
+
+  // Render các cột
   return (
     <div className="board">
-      {columns.map((column, columnIndex) => (
+      {/* Cột "Bắt đầu" */}
+
+      {columns.map((column) => (
         <Column
-          key={columnIndex}
+          key={column.id}
           title={column.title}
-          tasks={column.tasks}
-          onTaskMove={(taskIndex, newColumnIndex) => {
-            console.log('Task move initiated:', columnIndex, taskIndex, newColumnIndex); // Log task move initiation
-            handleTaskMove(columnIndex, taskIndex, newColumnIndex);
-          }}
-          onTaskSave={handleTaskSave} // Pass the handleTaskSave function to Column
-          onTaskTick={() => { console.log('Task ticked!'); }} // Log task tick
-          columnIndex={columnIndex} // Add columnIndex
-          isLastColumn={columnIndex === columns.length - 1} // Add isLastColumn
+          tasks={tasks.filter((task) => task.status === column.status)}
+          onTaskClick={handleTaskClick}
+          // onTaskMove={(taskIndex, newColumnIndex) => handleTaskMove(taskIndex, getStatusById(newColumnIndex.toString()))}
+          // onTaskSave={handleTaskSave}
+          onAddTask={() => handleAddTask()}
+          // columnIndex={0}
+          // isLastColumn={false}
+          // onTaskTick={() => {}}
         />
       ))}
+      {/* <button onClick={(columns.onAddTask) = {}} className="add-task-btn">
+        Thêm task
+      </button> */}
+      {/* Task Modal */}
+      {isTaskModalOpen && selectedTask && (
+        <TaskModal
+          task={selectedTask}
+          onClose={() => setIsTaskModalOpen(false)}
+          onSave={(task: TaskType, status: string) =>
+            handleTaskSave(task, status)
+          }
+          // console.log('Updated task:', updatedTasks);
+        />
+      )}
     </div>
   );
 };

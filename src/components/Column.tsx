@@ -1,60 +1,64 @@
-import React from 'react';
- import Task from './Task';
-import TaskModal from './TaskModal';
-import { TaskType } from './Data';
-
-export interface TaskData {
-  id: string;
-  title: string;
-  description: string;
-  dropdownOptions: {id: string; value: string; }[];
-  defaultDropdownValue: string;
-}
+import React from "react";
+import Task from "./Task";
+import TaskModal from "./TaskModal";
+import { TaskType } from "./Data";
 
 interface ColumnProps {
   title: string;
-  tasks: TaskData[];
-  onTaskTick: (taskIndex: number) => void;
-  onTaskMove: (taskIndex: number, newColumnIndex: number) => void;
-  onTaskSave: (updateTask:TaskData, newColumnIndex: number) =>void;
-  // onTaskClick: () => void;
-  columnIndex: number;  
-  isLastColumn: boolean;
+  tasks: TaskType[];
+  // onTaskMove: (taskIndex: number, newStatus: string) => void;
+  // onTaskSave: (updatedTask: TaskType, status:string) => void;
+  onAddTask: () => void;
+  // columnIndex: number;
+  // isLastColumn: boolean;
+  // onTaskTick: () => void;
+  onTaskClick: (task: TaskType) => void;
 }
 
-const Column  = (props:ColumnProps) => {
-  const {isLastColumn,onTaskMove,onTaskTick,onTaskSave,tasks,title} = props;
-  const [selectedTask, setSelectedTask] = React.useState<TaskData | null>(null); // State to store selected task
-  const [open,setOpen] = React.useState(false)
-  const handleClickTask = (task: TaskType) => {
-    setSelectedTask(task); // Set selected task
-    setOpen(!open)
-  };
+const Column: React.FC<ColumnProps> = ({
+  title,
+  tasks,
+  onTaskClick,
+  // onTaskTick,
+  // // onTaskMove,
+  // onTaskSave,
+  onAddTask,
+  // columnIndex,
+  // isLastColumn,
+}) => {
+  const [selectedTask, setSelectedTask] = React.useState<TaskType | null>(null);
+  const [open, setOpen] = React.useState(false);
+  const filteredTasks = tasks.filter((task) => task.title === title);
+  console.log("title", filteredTasks);
+  // const handleClickTask = (task: TaskType) => {
+  //   setSelectedTask(task);
+  //   setOpen(true);
+  // };
 
-  const onCloseModal = ()=>{
-    setSelectedTask(null)
-    setOpen(!open)
-  };
+  // const onCloseModal = () => {
+  //   setSelectedTask(null);
+  //   setOpen(false);
+  // };
 
-  const onSaveModal = (updatedTask:TaskData, newColumnIndex: number)=>{
-    onTaskSave(updatedTask,newColumnIndex);
-    onCloseModal();
-  };
-  
   return (
     <div className="column">
       <h2>{title}</h2>
-      {tasks.map((task, index) => (
-        <Task 
-          key={index} 
-          task={task} 
-          onTick={() => onTaskTick(index)} 
-          onMove={(newColumnIndex) => onTaskMove(index, newColumnIndex)} 
-          onClick={() => handleClickTask(task)} 
-          isCompleted={isLastColumn} 
-        />
-      ))}
-      {open ? <TaskModal task={selectedTask as any } onClose={onCloseModal} onSave={onSaveModal}/> : <></>}
+      <div className="task-list">
+        {tasks.map((task) => (
+          <Task
+            key={task.id}
+            task={task}
+            // onTaskMove={(newStatus) => onTaskMove(index, newStatus)}
+            // onTaskSave={(updatedTask) => onTaskSave(updatedTask, )}
+            onClick={() => onTaskClick(task)}
+          />
+        ))}
+      </div>
+      {/* {
+        <button onClick={onAddTask} className="add-task-btn">
+          Thêm task
+        </button>
+      } */}
     </div>
   );
 };

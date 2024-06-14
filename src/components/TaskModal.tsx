@@ -1,52 +1,59 @@
-import React, { useState } from 'react';
-import { TaskType } from './Data.tsx';
-
+// TaskModal.tsx
+import React, { useState } from "react";
+import { TaskType } from "./Data";
 
 interface TaskModalProps {
   task: TaskType;
   onMove?: (newColumnIndex: number) => void;
-  onClick?: () => void;
   onClose: () => void;
-  onSave: (updatedTask:TaskType,newColumnIndex:number) => void;
+  onSave: (updatedTask: TaskType, status: string) => void;
 }
 
-
-const TaskModal: React.FC<TaskModalProps> = ({ task, onMove, onClick, onClose, onSave }) => {
-  const [selectedOption, setSelectedOption] = useState(task.defaultDropdownValue);
-
-  const [newColumnIndex, setNewColumnIndex] = useState<number | null>(null);
+const TaskModal: React.FC<TaskModalProps> = ({
+  task,
+  onMove,
+  onClose,
+  onSave,
+}) => {
+  const [selectedStatus, setSelectedStatus] = useState(task.status);
+  // const [newColumnIndex, setNewColumnIndex] = useState<number | null>(null);
 
   const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  const selectedIndex = e.target.selectedIndex;
-    setSelectedOption(e.target.value);
-    setNewColumnIndex(selectedIndex);
+    // const selectedIndex = e.target.selectedIndex;
+    setSelectedStatus(e.target.value);
+    // setNewColumnIndex(selectedIndex);]
   };
 
   const handleSave = () => {
-    if (onSave && newColumnIndex !== null) {
-      onSave({ ...task, defaultDropdownValue: selectedOption }, newColumnIndex);
-    }
+    onSave(task, selectedStatus);
   };
 
   return (
-    <div className="modal" onClick={onClick}>
+    <div className="modal" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <span className="close-button" onClick={onClose}>&times;</span>
+        <span className="close-button" onClick={onClose}>
+          &times;
+        </span>
         <h2>{task.title}</h2>
-        <p>{task.description}</p>
-        <select
-          aria-label="Dropdown options"
-          value={selectedOption}
-          onChange={handleDropdownChange}
-          title="Select task status"
+        <label className="block text-left mb-2 font-medium">
+          Trạng thái:
+          <select
+            className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+            value={selectedStatus}
+            onChange={handleDropdownChange}
+          >
+            <option value="Bắt đầu">Bắt đầu</option>
+            <option value="Đang tiến hành">Đang tiến hành</option>
+            <option value="Hoàn thành">Hoàn thành</option>
+            <option value="Kết thúc">Kết thúc</option>
+          </select>
+        </label>
+        <button
+          className="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
+          onClick={handleSave}
         >
-          {task.dropdownOptions.map((option, index) => (
-            <option key={index} value={option.value}>{option.value}</option>
-            
-          ))}
-        </select>
-        <br></br>
-        <button onClick={handleSave}>Lưu</button>
+          Lưu
+        </button>
       </div>
     </div>
   );
