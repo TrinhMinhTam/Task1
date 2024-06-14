@@ -60,36 +60,40 @@ const Board: React.FC = () => {
   // Render các cột
   return (
     <div className="board">
-      {/* Cột "Bắt đầu" */}
-
-      {columns.map((column) => (
-        <Column
-          key={column.id}
-          title={column.title}
-          tasks={tasks.filter((task) => task.status === column.status)}
-          onTaskClick={handleTaskClick}
-          // onTaskMove={(taskIndex, newColumnIndex) => handleTaskMove(taskIndex, getStatusById(newColumnIndex.toString()))}
-          // onTaskSave={handleTaskSave}
-          onAddTask={() => handleAddTask()}
-          // columnIndex={0}
-          // isLastColumn={false}
-          // onTaskTick={() => {}}
-        />
-      ))}
-      {/* <button onClick={(columns.onAddTask) = {}} className="add-task-btn">
+      <h1 className="board-title">Bảng công việc</h1>
+      <button onClick={handleAddTask} className="add-task-btn">
+        Thêm task
+      </button>
+      <div className="board-header">
+        {columns.map((column) => (
+          <Column
+            key={column.id}
+            title={column.title}
+            tasks={tasks.filter((task) => task.status === column.status)}
+            onTaskClick={handleTaskClick}
+            // onTaskMove={(taskIndex, newColumnIndex) => handleTaskMove(taskIndex, getStatusById(newColumnIndex.toString()))}
+            // onTaskSave={handleTaskSave}
+            onAddTask={() => handleAddTask()}
+            // columnIndex={0}
+            // isLastColumn={false}
+            // onTaskTick={() => {}}
+          />
+        ))}
+        {/* <button onClick={(columns.onAddTask) = {}} className="add-task-btn">
         Thêm task
       </button> */}
-      {/* Task Modal */}
-      {isTaskModalOpen && selectedTask && (
-        <TaskModal
-          task={selectedTask}
-          onClose={() => setIsTaskModalOpen(false)}
-          onSave={(task: TaskType, status: string) =>
-            handleTaskSave(task, status)
-          }
-          // console.log('Updated task:', updatedTasks);
-        />
-      )}
+        {/* Task Modal */}
+        {isTaskModalOpen && selectedTask && (
+          <TaskModal
+            task={selectedTask}
+            onClose={() => setIsTaskModalOpen(false)}
+            onSave={(task: TaskType, status: string) =>
+              handleTaskSave(task, status)
+            }
+            // console.log('Updated task:', updatedTasks);
+          />
+        )}
+      </div>
     </div>
   );
 };
