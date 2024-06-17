@@ -2,20 +2,18 @@ import React, { useEffect, useState } from "react";
 import Column from "./Column";
 import { TaskType, columns, initialData } from "./Data";
 import TaskModal from "./TaskModal";
-
-// Hàm để lấy trạng thái theo id
+import AddTaskModal from "./AddTaskModal";
 
 const Board: React.FC = () => {
   const [tasks, setTasks] = useState<TaskType[]>(initialData);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false); // State để xác định trạng thái hiển thị của Task Modal
-  const [selectedTask, setSelectedTask] = useState<TaskType | null>(null); // Task được chọn để hiển thị trong Task Modal
-
+  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<TaskType | null>(null);
+  const [nextTaskId, setNextTaskId] = useState(tasks.length);
   const handleTaskClick = (task: TaskType) => {
     setSelectedTask(task); // Lưu task được chọn vào state selectedTask
     setIsTaskModalOpen(true); // Mở Task Modal
   };
-
-  // Hàm để xử lý việc di chuyển task từ cột này sang cột khác
 
   useEffect(() => {
     console.log("tasks uef: ", tasks);
@@ -36,27 +34,23 @@ const Board: React.FC = () => {
     setIsTaskModalOpen(!isTaskModalOpen);
   };
 
-  // Hàm để thêm task mới vào cột
   const handleAddTask = () => {
+    setIsAddTaskModalOpen(true);
+  };
+  const handleSaveNewTask = (title: string, status: string) => {
     const newTask: TaskType = {
-      id: tasks.length++,
-      title: `Task ${tasks.length++}`,
-      status: "Bắt đầu", // Hoặc giá trị mặc định tùy ý
+      id: nextTaskId,
+      title,
+      status,
       userId: 1,
     };
-    if (newTask) {
-      let clonetask: TaskType[] = [...tasks, newTask];
-      let updatedTask: TaskType[] = [];
-      clonetask.forEach((task) => {
-        if (task) {
-          updatedTask.push(task);
-        }
-      });
-      console.log("clonebf", updatedTask);
-      setTasks(updatedTask);
-    }
+    setTasks([...tasks, newTask]);
+    setNextTaskId(nextTaskId + 1);
   };
-
+  const handleTaskDelete = (taskId: number) => {
+    const updatedTasks = tasks.filter((task) => task.id !== taskId);
+    setTasks(updatedTasks);
+  };
   // Render các cột
   return (
     <div className="board">
@@ -64,7 +58,7 @@ const Board: React.FC = () => {
       <button onClick={handleAddTask} className="add-task-btn">
         Thêm task
       </button>
-      <div className="board-header">
+      <div className="column-container">
         {columns.map((column) => (
           <Column
             key={column.id}
@@ -73,7 +67,7 @@ const Board: React.FC = () => {
             onTaskClick={handleTaskClick}
             // onTaskMove={(taskIndex, newColumnIndex) => handleTaskMove(taskIndex, getStatusById(newColumnIndex.toString()))}
             // onTaskSave={handleTaskSave}
-            onAddTask={() => handleAddTask()}
+            // onAddTask={() => handleAddTask()}
             // columnIndex={0}
             // isLastColumn={false}
             // onTaskTick={() => {}}
@@ -90,7 +84,14 @@ const Board: React.FC = () => {
             onSave={(task: TaskType, status: string) =>
               handleTaskSave(task, status)
             }
+            onDelete={handleTaskDelete}
             // console.log('Updated task:', updatedTasks);
+          />
+        )}
+        {isAddTaskModalOpen && (
+          <AddTaskModal
+            onClose={() => setIsAddTaskModalOpen(false)}
+            onSave={handleSaveNewTask}
           />
         )}
       </div>

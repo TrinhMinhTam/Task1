@@ -7,6 +7,7 @@ interface TaskModalProps {
   onMove?: (newColumnIndex: number) => void;
   onClose: () => void;
   onSave: (updatedTask: TaskType, status: string) => void;
+  onDelete: (taskId: number) => void; // Thêm prop onDelete
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -14,6 +15,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   onMove,
   onClose,
   onSave,
+  onDelete,
 }) => {
   const [selectedStatus, setSelectedStatus] = useState(task.status);
   // const [newColumnIndex, setNewColumnIndex] = useState<number | null>(null);
@@ -27,7 +29,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const handleSave = () => {
     onSave(task, selectedStatus);
   };
-
+  const handleDelete = () => {
+    onDelete(task.id);
+    onClose();
+  };
   return (
     <div className="modal" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -48,6 +53,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
             <option value="Kết thúc">Kết thúc</option>
           </select>
         </label>
+        <button
+          className="mt-4 w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600"
+          onClick={handleDelete}
+        >
+          Xóa
+        </button>
         <button
           className="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
           onClick={handleSave}

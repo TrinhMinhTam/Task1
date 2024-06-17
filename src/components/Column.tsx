@@ -8,7 +8,7 @@ interface ColumnProps {
   tasks: TaskType[];
   // onTaskMove: (taskIndex: number, newStatus: string) => void;
   // onTaskSave: (updatedTask: TaskType, status:string) => void;
-  onAddTask: () => void;
+  // onAddTask: () => void;
   // columnIndex: number;
   // isLastColumn: boolean;
   // onTaskTick: () => void;
@@ -22,7 +22,7 @@ const Column: React.FC<ColumnProps> = ({
   // onTaskTick,
   // // onTaskMove,
   // onTaskSave,
-  onAddTask,
+  // onAddTask,
   // columnIndex,
   // isLastColumn,
 }) => {
