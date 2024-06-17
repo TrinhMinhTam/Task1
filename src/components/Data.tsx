@@ -31,21 +31,18 @@ export const columns: ColumnType[] = [
     id: 4,
   },
 ];
-// function getDefaultById(id: string): string{
-//   switch (id) {
-//     case '1':
-//         return 'Bắt đầu';
-//     case '2':
-//         return 'Đang tiến hành';
-//     case '3':
-//         return 'Hoàn thành';
-//     case '4':
-//         return 'Kết thúc';
-//     default:
-//         return '';
-// }
-// }
+export interface UserType {
+  id: number;
+  userName: string;
+  role: string;
+}
+export const userList: UserType[] = [
+  { id: 1, userName: "Trịnh", role: "Developer" },
+  { id: 2, userName: "Minh", role: "Designer" },
+  { id: 3, userName: "Tâm", role: "Manager" },
 
+  // Thêm các người dùng mẫu tại đây nếu cần
+];
 export const initialData: TaskType[] = [
   {
     userId: 1,

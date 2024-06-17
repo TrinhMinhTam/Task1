@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Column from "./Column";
-import { TaskType, columns, initialData } from "./Data";
+import { TaskType, columns, initialData, userList } from "./Data";
 import TaskModal from "./TaskModal";
 import AddTaskModal from "./AddTaskModal";
 
@@ -10,6 +10,7 @@ const Board: React.FC = () => {
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<TaskType | null>(null);
   const [nextTaskId, setNextTaskId] = useState(tasks.length);
+
   const handleTaskClick = (task: TaskType) => {
     setSelectedTask(task); // Lưu task được chọn vào state selectedTask
     setIsTaskModalOpen(true); // Mở Task Modal
@@ -19,14 +20,18 @@ const Board: React.FC = () => {
     console.log("tasks uef: ", tasks);
   }, [tasks]);
   // Hàm để lưu task sau khi cập nhật
-  const handleTaskSave = (updatedTask: TaskType, status: string) => {
+  const handleTaskSave = (
+    updatedTask: TaskType,
+    status: string,
+    userId: number
+  ) => {
     console.log("update", updatedTask);
     const clonetask = [...tasks];
     console.log("clonebf", tasks);
     clonetask.map((task: TaskType) => {
       if (task.id === updatedTask.id) {
         task.status = status;
-        // console.log('map',task)
+        task.userId = userId;
       }
     });
     console.log("cloneaf", clonetask);
@@ -73,25 +78,23 @@ const Board: React.FC = () => {
             // onTaskTick={() => {}}
           />
         ))}
-        {/* <button onClick={(columns.onAddTask) = {}} className="add-task-btn">
-        Thêm task
-      </button> */}
         {/* Task Modal */}
         {isTaskModalOpen && selectedTask && (
           <TaskModal
             task={selectedTask}
             onClose={() => setIsTaskModalOpen(false)}
-            onSave={(task: TaskType, status: string) =>
-              handleTaskSave(task, status)
+            onSave={(task: TaskType, status: string, userId: number) =>
+              handleTaskSave(task, status, userId)
             }
             onDelete={handleTaskDelete}
-            // console.log('Updated task:', updatedTasks);
+            userList={userList} // Truyền userList xuống TaskModal
           />
         )}
         {isAddTaskModalOpen && (
           <AddTaskModal
             onClose={() => setIsAddTaskModalOpen(false)}
             onSave={handleSaveNewTask}
+            userList={userList}
           />
         )}
       </div>

@@ -1,38 +1,39 @@
 // TaskModal.tsx
 import React, { useState } from "react";
-import { TaskType } from "./Data";
+import { TaskType, UserType } from "./Data";
 
 interface TaskModalProps {
   task: TaskType;
   onMove?: (newColumnIndex: number) => void;
   onClose: () => void;
-  onSave: (updatedTask: TaskType, status: string) => void;
+  onSave: (updatedTask: TaskType, status: string, userId: number) => void;
   onDelete: (taskId: number) => void; // Thêm prop onDelete
+  userList: UserType[];
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
   task,
-  onMove,
   onClose,
   onSave,
   onDelete,
+  userList,
 }) => {
   const [selectedStatus, setSelectedStatus] = useState(task.status);
-  // const [newColumnIndex, setNewColumnIndex] = useState<number | null>(null);
-
+  const [selectedUserId, setSelectedUserId] = useState(task.userId);
   const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    // const selectedIndex = e.target.selectedIndex;
     setSelectedStatus(e.target.value);
-    // setNewColumnIndex(selectedIndex);]
   };
-
+  const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedUserId(parseInt(e.target.value));
+  };
   const handleSave = () => {
-    onSave(task, selectedStatus);
+    onSave(task, selectedStatus, selectedUserId);
   };
   const handleDelete = () => {
     onDelete(task.id);
     onClose();
   };
+
   return (
     <div className="modal" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -40,6 +41,20 @@ const TaskModal: React.FC<TaskModalProps> = ({
           &times;
         </span>
         <h2>{task.title}</h2>
+        <label className="block text-left mb-2 font-medium">
+          Người dùng:
+          <select
+            className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+            value={selectedUserId}
+            onChange={handleUserChange}
+          >
+            {userList.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.userName} ({user.role})
+              </option>
+            ))}
+          </select>
+        </label>
         <label className="block text-left mb-2 font-medium">
           Trạng thái:
           <select
