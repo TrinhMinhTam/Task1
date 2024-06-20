@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 729px; /* Chiều cao 100% màn hình */
+  height: 100%; /* Chiều cao 100% màn hình */
   margin: 0;
   padding: 0;
   width: 1500px;
@@ -12,14 +12,28 @@
 .board {
   width: 100%;
   padding: 20px;
-  overflow-x: auto; /* Cho phép cuộn ngang nếu nội dung bị tràn */
+  overflow: auto; /* Cho phép cuộn ngang nếu nội dung bị tràn */
   width: 100%; /* Chiều rộng 100% */
   max-width: 1200px; /* Giới hạn chiều rộng tối đa */
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+.board-title-buttonload {
+  background-color: #04aa6d; /* Green background */
+  border: none; /* Remove borders */
+  color: white; /* White text */
+  padding: 12px 24px; /* Some padding */
+  font-size: 16px; /* Set a font-size */
+  margin-bottom: 20px;
+}
 
+/* Add a right margin to each icon */
+.board-title-fa {
+  margin-left: -12px;
+  margin-right: 8px;
+  margin-bottom: 20px;
+}
 .board-title {
   font-size: 24px;
   margin-bottom: 10px;
@@ -34,7 +48,14 @@
   border-radius: 5px;
   cursor: pointer;
 }
+.refresh-btn {
+  margin-bottom: 20px;
+  border-radius: 20%;
+}
 
+.refresh-btn:hover {
+  background-color: #5d64ea;
+}
 .add-task-btn:hover {
   background-color: #14756d;
 }
@@ -45,7 +66,7 @@
 }
 
 .column {
-  background-color: #1b9d8b;
+  background-color: #ffffff;
   width: 250px;
   border-radius: 5px;
   padding: 10px;
@@ -57,10 +78,26 @@
   flex-direction: column;
 }
 
+.column.column-1 {
+  background-color: #f7cac9; /* Màu hồng nhạt */
+}
+
+.column.column-2 {
+  background-color: #00ff22; /* Màu xanh nhạt */
+}
+
+.column.column-3 {
+  background-color: #f1a120; /* Màu cam nhạt */
+}
+
+.column.column-4 {
+  background-color: #b7c0c7; /* Màu xám nhạt */
+}
+
 .task {
   background-color: white;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 10px;
   margin: 10px 0;
   padding: 10px;
   width: 100%;
@@ -76,6 +113,9 @@
 }
 .task p {
   margin: 0; /* Đảm bảo không có khoảng cách bên ngoài */
+}
+.task.completed h3 {
+  text-decoration: line-through;
 }
 input[type="radio"] {
   margin-right: 10px;
@@ -151,4 +191,19 @@ input[type="radio"] {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+.buttonload {
+  background-color: rgba(202, 186, 186, 0.873);
+  border: none;
+  color: black;
+  padding: 12px 24px;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+}
+
+.buttonload .fa {
+  margin-right: 8px;
 }

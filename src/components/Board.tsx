@@ -1,103 +1,164 @@
 import React, { useEffect, useState } from "react";
 import Column from "./Column";
-import { TaskType, columns, initialData, userList } from "./Data";
+import { TaskType, UserType, columns } from "./Data";
 import TaskModal from "./TaskModal";
-import AddTaskModal from "./AddTaskModal";
+import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 const Board: React.FC = () => {
-  const [tasks, setTasks] = useState<TaskType[]>(initialData);
+  const [tasks, setTasks] = useState<TaskType[]>([]);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false); // State để xác định trạng thái hiển thị của Task Modal
-  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<TaskType | null>(null);
-  const [nextTaskId, setNextTaskId] = useState(tasks.length);
-
-  const handleTaskClick = (task: TaskType) => {
-    setSelectedTask(task); // Lưu task được chọn vào state selectedTask
-    setIsTaskModalOpen(true); // Mở Task Modal
+  const [isLoading, setIsLoading] = useState(false); // State cho loading
+  const [userList, setUserList] = useState<UserType[]>([]);
+  const [check, setCheck] = useState(false);
+  const [reloadApi, setReloadApi] = useState(false);
+  const handleTaskClick = (task?: TaskType | null) => {
+    if (task) {
+      setSelectedTask(task);
+      setIsTaskModalOpen(true);
+      console.log("task");
+      setCheck(false); // Reset check when clicking on a task
+    } else {
+      console.log("Button Thêm Task được click");
+      setCheck(true);
+      setIsTaskModalOpen(true);
+      setSelectedTask(null);
+    }
   };
 
+  useEffect(() => {
+    fetchTasks(); // Khởi động fetchTasks khi component được render lần đầu tiên
+  }, [reloadApi]);
+
+  const fetchTasks = () => {
+    setIsLoading(true); // Bắt đầu tải dữ liệu
+    setTimeout(() => {
+      axios
+        .get("http://nmt.logit.id.vn:5005/api/v1/task/getList")
+        .then((response) => {
+          setTasks(response.data);
+          setIsLoading(false); // Dừng loading khi dữ liệu đã được tải
+          console.log("API", response);
+        })
+        .catch((error) => {
+          console.error("Error : ", error);
+          setIsLoading(false); // Dừng loading nếu có lỗi xảy ra
+        });
+    }, 1000);
+  };
+  const fetchUser = () => {
+    axios
+      .get("http://nmt.logit.id.vn:5005/api/v1/user/getList")
+      .then((Response) => {
+        setUserList(Response.data);
+        console.log("Data User ", Response);
+      })
+      .catch((Error) => {
+        console.error("Lỗi User", Error);
+      });
+  };
+  useEffect(() => {
+    fetchUser();
+  }, []);
   useEffect(() => {
     console.log("tasks uef: ", tasks);
   }, [tasks]);
   // Hàm để lưu task sau khi cập nhật
-  const handleTaskSave = (
-    updatedTask: TaskType,
-    status: string,
-    userId: number
-  ) => {
-    console.log("update", updatedTask);
-    const clonetask = [...tasks];
-    console.log("clonebf", tasks);
-    clonetask.map((task: TaskType) => {
-      if (task.id === updatedTask.id) {
-        task.status = status;
-        task.userId = userId;
-      }
-    });
-    console.log("cloneaf", clonetask);
-    setTasks(clonetask);
-    setIsTaskModalOpen(!isTaskModalOpen);
+  const handleTaskSave = async (updatedTask: TaskType) => {
+    if (check) {
+      const newTask: TaskType = updatedTask;
+
+      console.log("test", newTask);
+
+      axios({
+        url: "http://nmt.logit.id.vn:5005/api/v1/task/add",
+        method: "POST",
+        data: newTask,
+      })
+        .then((res: any) => {
+          console.log("res: ", res.data);
+        })
+        .catch((err: any) => {
+          console.log("err: ", err);
+        });
+
+      // } else {
+      // console.log("quá trình update", updatedTask);
+
+      setIsTaskModalOpen(!isTaskModalOpen);
+    }
+    setReloadApi(!reloadApi);
   };
 
-  const handleAddTask = () => {
-    setIsAddTaskModalOpen(true);
-  };
-  const handleSaveNewTask = (title: string, status: string) => {
-    const newTask: TaskType = {
-      id: nextTaskId,
-      title,
-      status,
-      userId: 1,
-    };
-    setTasks([...tasks, newTask]);
-    setNextTaskId(nextTaskId + 1);
-  };
-  const handleTaskDelete = (taskId: number) => {
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
+  const handleTaskDelete = (taskId: string) => {
+    const updatedTasks = tasks.filter((task) => task._id !== taskId);
     setTasks(updatedTasks);
+  };
+  const handleRefresh = () => {
+    setIsLoading(true);
+    fetchTasks(); // Gọi lại hàm fetchTasks để refresh dữ liệu
   };
   // Render các cột
   return (
-    <div className="board">
-      <h1 className="board-title">Bảng công việc</h1>
-      <button onClick={handleAddTask} className="add-task-btn">
-        Thêm task
-      </button>
-      <div className="column-container">
+    <div className="board w-full p-6 max-w-7xl mx-auto flex flex-col items-center">
+      <h1 className="board-title text-3xl font-bold mb-4">Bảng công việc</h1>
+      <div className="flex space-x-4 mb-6">
+        <button
+          onClick={() => handleTaskClick(null)}
+          className="add-task-btn bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+        >
+          Thêm Task
+        </button>
+        <button
+          onClick={handleRefresh}
+          className="refresh-btn bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700"
+        >
+          Refresh
+        </button>
+        {isLoading && (
+          <button
+            className="buttonload bg-blue-500 text-white py-2 px-4 rounded inline-flex items-center"
+            disabled
+          >
+            <FontAwesomeIcon icon={faSpinner} spin />
+            <span className="ml-2">Loading...</span>
+          </button>
+        )}
+      </div>
+
+      <div className="column-container flex space-x-4">
         {columns.map((column) => (
           <Column
             key={column.id}
             title={column.title}
             tasks={tasks.filter((task) => task.status === column.status)}
             onTaskClick={handleTaskClick}
-            // onTaskMove={(taskIndex, newColumnIndex) => handleTaskMove(taskIndex, getStatusById(newColumnIndex.toString()))}
-            // onTaskSave={handleTaskSave}
-            // onAddTask={() => handleAddTask()}
-            // columnIndex={0}
-            // isLastColumn={false}
-            // onTaskTick={() => {}}
+            className="bg-white p-4 rounded shadow"
+            id={column.id} // Truyền id vào Column
           />
         ))}
-        {/* Task Modal */}
-        {isTaskModalOpen && selectedTask && (
-          <TaskModal
-            task={selectedTask}
-            onClose={() => setIsTaskModalOpen(false)}
-            onSave={(task: TaskType, status: string, userId: number) =>
-              handleTaskSave(task, status, userId)
-            }
-            onDelete={handleTaskDelete}
-            userList={userList} // Truyền userList xuống TaskModal
-          />
-        )}
-        {isAddTaskModalOpen && (
-          <AddTaskModal
-            onClose={() => setIsAddTaskModalOpen(false)}
-            onSave={handleSaveNewTask}
-            userList={userList}
-          />
-        )}
       </div>
+      {isTaskModalOpen && (
+        <TaskModal
+          task={
+            selectedTask || {
+              title: "",
+              status: "To do",
+              userId: 1,
+              category: "Low",
+              content: "",
+              image: "",
+            }
+          }
+          onClose={() => setIsTaskModalOpen(false)}
+          onSave={handleTaskSave}
+          onDelete={handleTaskDelete}
+          userList={userList}
+          filter={check ? "Thêm Task" : ""} // Truyền filter để xác định đang thêm task hay không
+        />
+      )}
     </div>
   );
 };

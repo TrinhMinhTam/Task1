@@ -1,14 +1,16 @@
 // TaskModal.tsx
 import React, { useState } from "react";
 import { TaskType, UserType } from "./Data";
+import axios from "axios";
 
 interface TaskModalProps {
   task: TaskType;
   onMove?: (newColumnIndex: number) => void;
   onClose: () => void;
-  onSave: (updatedTask: TaskType, status: string, userId: number) => void;
-  onDelete: (taskId: number) => void; // Thêm prop onDelete
+  onSave: (updatedTask: TaskType) => void;
+  onDelete: (taskId: string) => void; // Thêm prop onDelete
   userList: UserType[];
+  filter?: string;
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -17,21 +19,99 @@ const TaskModal: React.FC<TaskModalProps> = ({
   onSave,
   onDelete,
   userList,
+  filter,
 }) => {
-  const [selectedStatus, setSelectedStatus] = useState(task.status);
-  const [selectedUserId, setSelectedUserId] = useState(task.userId);
-  const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedStatus(e.target.value);
+  const [updatedTask, setUpdatedTask] = useState<TaskType>(task);
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setUpdatedTask((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
-  const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedUserId(parseInt(e.target.value));
-  };
-  const handleSave = () => {
-    onSave(task, selectedStatus, selectedUserId);
-  };
+  // const handleChangeOption = (
+  //   e: React.ChangeEvent<
+  //     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+  //   >
+  // ) => {
+  //   const { name, value } = e.target;
+  //   setUpdatedTask((prevState) => ({
+  //     ...prevState,
+  //     [name]: parseInt(value),
+  //   }));
+  // };
   const handleDelete = () => {
-    onDelete(task.id);
+    axios
+      .delete(
+        `http://nmt.logit.id.vn:5005/api/v1/task/delete/${updatedTask._id}`
+      )
+      .then((response) => {
+        console.log("data", response);
+        if (response.data.status === true) {
+          console.log("Delete Task:", response);
+          if (updatedTask._id) {
+            onDelete(updatedTask._id);
+          }
+        } else {
+          console.error("Task not found or some error occurred");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching task details:", error);
+      });
     onClose();
+  };
+  // useEffect(() => {
+  //   setNewTask({ ...task });
+  // }, [task]);
+  const handleSave = () => {
+    if (filter === "Thêm Task") {
+      console.log("add task", filter);
+      onSave(updatedTask);
+    } else {
+      const requestBody = updatedTask;
+      console.log("test update", requestBody);
+      // axios
+      //   .put(
+      //     `http://nmt.logit.id.vn:5005/api/v1/task/update/${updatedTask._id}`,
+      //     requestBody
+      //   )
+      //   .then((response) => {
+      //     console.log("Update Task Response:", response);
+      //     // Kiểm tra xem response có thành công hay không và thực hiện các xử lý phù hợp
+      //     if (response.data.status === true) {
+      //       onSave(updatedTask);
+      //     } else {
+      //       console.error("Update Task failed:", response.data.message);
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.error("Error updating task:", error);
+      //   });
+      axios({
+        url: `http://nmt.logit.id.vn:5005/api/v1/task/update/${updatedTask._id}`,
+        method: "PUT",
+        data: requestBody,
+      })
+        .then((res) => {
+          console.log("res: ", res.data);
+
+          if (res.data.status === true) {
+            onSave(updatedTask);
+          } else {
+            console.error("err update", res.data.message);
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+
+      onClose();
+    }
   };
 
   return (
@@ -40,17 +120,60 @@ const TaskModal: React.FC<TaskModalProps> = ({
         <span className="close-button" onClick={onClose}>
           &times;
         </span>
-        <h2>{task.title}</h2>
+        <h2>{filter === "Thêm Task" ? "Thêm Task" : "Chỉnh sửa Task"}</h2>
+        <label className="block text-left mb-2 font-medium">
+          Category:
+          <select
+            name="category"
+            value={updatedTask.category}
+            onChange={handleChange}
+            className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+          >
+            <option value="Low">Low</option>
+            <option value="Complete">Complete</option>
+            <option value="Hight">Hight</option>
+          </select>
+        </label>
+        <label className="block text-left mb-2 font-medium">
+          Title:
+          <input
+            type="text"
+            name="title"
+            value={updatedTask.title}
+            onChange={handleChange}
+            className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+          />
+        </label>
+        <label className="block text-left mb-2 font-medium">
+          Content:
+          <textarea
+            name="content"
+            value={updatedTask.content}
+            onChange={handleChange}
+            className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+          />
+        </label>
+        <label className="block text-left mb-2 font-medium">
+          Image URL:
+          <input
+            type="text"
+            name="image"
+            value={updatedTask.image}
+            onChange={handleChange}
+            className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+          />
+        </label>
         <label className="block text-left mb-2 font-medium">
           Người dùng:
           <select
+            name="userId"
+            value={updatedTask.userId}
+            onChange={handleChange}
             className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
-            value={selectedUserId}
-            onChange={handleUserChange}
           >
             {userList.map((user) => (
               <option key={user.id} value={user.id}>
-                {user.userName} ({user.role})
+                {user.username} ({user.email})
               </option>
             ))}
           </select>
@@ -58,22 +181,24 @@ const TaskModal: React.FC<TaskModalProps> = ({
         <label className="block text-left mb-2 font-medium">
           Trạng thái:
           <select
+            name="status"
+            value={updatedTask.status}
+            onChange={handleChange}
             className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
-            value={selectedStatus}
-            onChange={handleDropdownChange}
           >
-            <option value="Bắt đầu">Bắt đầu</option>
-            <option value="Đang tiến hành">Đang tiến hành</option>
-            <option value="Hoàn thành">Hoàn thành</option>
-            <option value="Kết thúc">Kết thúc</option>
+            <option value="To do">To do</option>
+            <option value="On Progress">On Progress</option>
+            <option value="Done">Done</option>
           </select>
         </label>
-        <button
-          className="mt-4 w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600"
-          onClick={handleDelete}
-        >
-          Xóa
-        </button>
+        {filter !== "Thêm Task" && (
+          <button
+            className="mt-4 w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600"
+            onClick={handleDelete}
+          >
+            Xóa
+          </button>
+        )}
         <button
           className="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
           onClick={handleSave}

@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { TaskType } from './Data';
+import React, { useState } from "react";
+import { TaskType } from "./Data";
 
 interface TaskProps {
   task: TaskType;
   // onTaskMove: (newStatus: string) => void;
   // onTaskSave: (updatedTask: TaskType) => void;
   onTaskTick?: () => void;
-  onClick:()=> void;
+  onClick: () => void;
 }
 
 const Task: React.FC<TaskProps> = ({ task, onTaskTick, onClick }) => {
@@ -18,7 +18,7 @@ const Task: React.FC<TaskProps> = ({ task, onTaskTick, onClick }) => {
     const updatedTask: TaskType = {
       ...task,
       title: updatedTitle,
-      
+
       status: selectedOption, // Cập nhật status thay vì defaultDropdownValue
     };
     // onTaskSave(updatedTask);
@@ -38,19 +38,33 @@ const Task: React.FC<TaskProps> = ({ task, onTaskTick, onClick }) => {
 
   return (
     <div className="task" onClick={onClick}>
-      {!editing ? (
-        <>
-          <div className="task-header">
-            <h3>{task.title}</h3>
-          </div>
-          <p>Trạng thái: {task.status}</p> {/* Hiển thị trạng thái thay vì defaultDropdownValue */}
-        </>
-      ) : (
-        <>
-          
-        </>
-      )}
-      {/* <button onClick={() => onTaskMove(selectedOption)}>Di chuyển task</button> */}
+      <div
+        className="task p-4 bg-gray-100 rounded shadow mb-4 cursor-pointer"
+        onClick={onClick}
+      >
+        {!editing ? (
+          <>
+            <div
+              className={`task-content ${
+                task.status === "Done" ? "completed" : ""
+              }`}
+            >
+              <h3 className="text-md font-semibold mb-2">{task.title}</h3>
+              <p className="text-sm text-gray-700">Trạng thái: {task.status}</p>
+              <p className="text-sm text-gray-700">{task.content}</p>
+              {task.image && (
+                <img
+                  src={task.image}
+                  alt={task.title}
+                  className="mt-2 rounded"
+                />
+              )}
+            </div>
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
     </div>
   );
 };
