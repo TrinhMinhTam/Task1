@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Task from "./Task";
 import TaskModal from "./TaskModal";
-import { TaskType } from "./Data";
+import { TaskType } from "../Data";
 import axios from "axios";
 
 interface ColumnProps {

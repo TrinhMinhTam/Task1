@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TaskType } from "./Data";
+import { TaskType } from "../Data";
 
 interface TaskProps {
   task: TaskType;

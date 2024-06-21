@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%; /* Chiều cao 100% màn hình */
+  height: 100%;
   margin: 0;
   padding: 0;
   width: 1500px;
@@ -12,23 +12,22 @@
 .board {
   width: 100%;
   padding: 20px;
-  overflow: auto; /* Cho phép cuộn ngang nếu nội dung bị tràn */
-  width: 100%; /* Chiều rộng 100% */
-  max-width: 1200px; /* Giới hạn chiều rộng tối đa */
+  overflow: auto;
+  width: 100%;
+  max-width: 1200px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 .board-title-buttonload {
-  background-color: #04aa6d; /* Green background */
-  border: none; /* Remove borders */
-  color: white; /* White text */
-  padding: 12px 24px; /* Some padding */
-  font-size: 16px; /* Set a font-size */
+  background-color: #04aa6d;
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
   margin-bottom: 20px;
 }
 
-/* Add a right margin to each icon */
 .board-title-fa {
   margin-left: -12px;
   margin-right: 8px;
@@ -39,6 +38,7 @@
   margin-bottom: 10px;
 }
 
+/* 
 .add-task-btn {
   margin-bottom: 20px;
   padding: 10px 20px;
@@ -73,26 +73,26 @@
   flex: 1;
   margin-right: 10px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-  min-width: 200px; /* Đảm bảo cột không quá nhỏ */
+  min-width: 200px;
   display: flex;
   flex-direction: column;
 }
 
 .column.column-1 {
-  background-color: #f7cac9; /* Màu hồng nhạt */
+  background-color: #f7cac9;
 }
 
 .column.column-2 {
-  background-color: #00ff22; /* Màu xanh nhạt */
+  background-color: #00ff22;
 }
 
 .column.column-3 {
-  background-color: #f1a120; /* Màu cam nhạt */
+  background-color: #f1a120;
 }
 
 .column.column-4 {
-  background-color: #b7c0c7; /* Màu xám nhạt */
-}
+  background-color: #b7c0c7;
+} */
 
 .task {
   background-color: white;
@@ -103,8 +103,8 @@
   width: 100%;
   display: flex;
   align-items: center;
-  flex-direction: column; /* Sắp xếp các phần tử con theo chiều dọc */
-  align-items: flex-start; /* Canh lề trái */
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .task h3 {

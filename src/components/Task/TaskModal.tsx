@@ -1,6 +1,6 @@
 // TaskModal.tsx
 import React, { useState } from "react";
-import { TaskType, UserType } from "./Data";
+import { TaskType, UserType } from "../Data";
 import axios from "axios";
 
 interface TaskModalProps {

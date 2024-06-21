@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Column from "./Column";
-import { TaskType, UserType, columns } from "./Data";
+import { TaskType, UserType, columns } from "../Data";
 import TaskModal from "./TaskModal";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
