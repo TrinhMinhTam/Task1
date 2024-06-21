@@ -10,26 +10,9 @@ export interface TaskType {
 }
 export interface ColumnType {
   title: string;
-  id: number;
+  _id?: string;
   status: string;
 }
-export const columns: ColumnType[] = [
-  {
-    title: "To do",
-    status: "To do",
-    id: 1,
-  },
-  {
-    title: "On Progress",
-    status: "On Progress",
-    id: 2,
-  },
-  {
-    title: "Done",
-    status: "Done",
-    id: 3,
-  },
-];
 export interface UserType {
   id: number;
   username: string;

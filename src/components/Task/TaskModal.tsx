@@ -115,12 +115,23 @@ const TaskModal: React.FC<TaskModalProps> = ({
   };
 
   return (
-    <div className="modal" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <span className="close-button" onClick={onClose}>
-          &times;
-        </span>
-        <h2>{filter === "Thêm Task" ? "Thêm Task" : "Chỉnh sửa Task"}</h2>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-lg shadow-lg p-6 w-96"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">
+            {filter === "Thêm Task" ? "Thêm Task" : "Chỉnh sửa Task"}
+          </h2>
+          <span className="cursor-pointer text-gray-500" onClick={onClose}>
+            &times;
+          </span>
+        </div>
+
         <label className="block text-left mb-2 font-medium">
           Category:
           <select
@@ -130,10 +141,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
             className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
           >
             <option value="Low">Low</option>
+            <option value="High">High</option>
             <option value="Complete">Complete</option>
-            <option value="Hight">Hight</option>
           </select>
         </label>
+
         <label className="block text-left mb-2 font-medium">
           Title:
           <input
@@ -144,6 +156,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
           />
         </label>
+
         <label className="block text-left mb-2 font-medium">
           Content:
           <textarea
@@ -153,6 +166,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
           />
         </label>
+
         <label className="block text-left mb-2 font-medium">
           Image URL:
           <input
@@ -163,6 +177,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
           />
         </label>
+
         <label className="block text-left mb-2 font-medium">
           Người dùng:
           <select
@@ -178,6 +193,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             ))}
           </select>
         </label>
+
         <label className="block text-left mb-2 font-medium">
           Trạng thái:
           <select
@@ -191,6 +207,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             <option value="Done">Done</option>
           </select>
         </label>
+
         {filter !== "Thêm Task" && (
           <button
             className="mt-4 w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600"

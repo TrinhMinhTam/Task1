@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Column from "./Column";
-import { TaskType, UserType, columns } from "../Data";
+import { TaskType, UserType } from "../Data";
 import TaskModal from "./TaskModal";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,6 +14,9 @@ const Board: React.FC = () => {
   const [userList, setUserList] = useState<UserType[]>([]);
   const [check, setCheck] = useState(false);
   const [reloadApi, setReloadApi] = useState(false);
+  const [statusList, setStatusList] = useState<{ _id: string; name: string }[]>(
+    []
+  );
   const handleTaskClick = (task?: TaskType | null) => {
     if (task) {
       setSelectedTask(task);
@@ -61,6 +64,7 @@ const Board: React.FC = () => {
   };
   useEffect(() => {
     fetchUser();
+    fetchStatus();
   }, []);
   useEffect(() => {
     console.log("tasks uef: ", tasks);
@@ -92,6 +96,18 @@ const Board: React.FC = () => {
     setReloadApi(!reloadApi);
   };
 
+  const fetchStatus = () => {
+    axios
+      .get("http://nmt.logit.id.vn:5005/api/v1/status/getList")
+      .then((response) => {
+        setStatusList(response.data);
+        console.log("Status List: ", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching status:", error);
+      });
+  };
+
   const handleTaskDelete = (taskId: string) => {
     const updatedTasks = tasks.filter((task) => task._id !== taskId);
     setTasks(updatedTasks);
@@ -102,7 +118,7 @@ const Board: React.FC = () => {
   };
   // Render các cột
   return (
-    <div className="board w-full p-6 max-w-7xl mx-auto flex flex-col items-center">
+    <div className="board w-full p-6 max-w-7xl mx-auto flex flex-col items-center max-h-[650px] overflow-y-auto">
       <h1 className="board-title text-3xl font-bold mb-4">Bảng công việc</h1>
       <div className="flex space-x-4 mb-6">
         <button
@@ -127,19 +143,18 @@ const Board: React.FC = () => {
           </button>
         )}
       </div>
-
       <div className="column-container flex space-x-4">
-        {columns.map((column) => (
+        {statusList.map((status) => (
           <Column
-            key={column.id}
-            title={column.title}
-            tasks={tasks.filter((task) => task.status === column.status)}
+            key={status._id}
+            title={status.name}
+            tasks={tasks.filter((task) => task.status === status.name)}
             onTaskClick={handleTaskClick}
             className="bg-white p-4 rounded shadow"
-            id={column.id} // Truyền id vào Column
           />
         ))}
       </div>
+
       {isTaskModalOpen && (
         <TaskModal
           task={
@@ -156,7 +171,7 @@ const Board: React.FC = () => {
           onSave={handleTaskSave}
           onDelete={handleTaskDelete}
           userList={userList}
-          filter={check ? "Thêm Task" : ""} // Truyền filter để xác định đang thêm task hay không
+          filter={check ? "Thêm Task" : ""}
         />
       )}
     </div>

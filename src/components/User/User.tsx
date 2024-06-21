@@ -52,20 +52,31 @@ const UserComponent: React.FC = () => {
             <span className="ml-2">Loading...</span>
           </button>
         )}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
-          {userList.length > 0 ? (
-            userList.map((user) => (
-              <div
-                key={user.id}
-                className="task bg-white border border-gray-200 rounded-lg p-4 w-full"
-              >
-                <h2 className="text-xl font-semibold mb-2">{user.username}</h2>
-                <p className="text-gray-600">{user.email}</p>
-              </div>
-            ))
-          ) : (
-            <p className="text-center">No users found</p>
-          )}
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-4 py-2">Username</th>
+                <th className="px-4 py-2">Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              {userList.length > 0 ? (
+                userList.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-2">{user.username}</td>
+                    <td className="px-4 py-2">{user.email}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={2} className="px-4 py-2 text-center">
+                    No users found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
