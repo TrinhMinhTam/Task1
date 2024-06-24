@@ -8,23 +8,22 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 const Board: React.FC = () => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false); // State để xác định trạng thái hiển thị của Task Modal
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<TaskType | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // State cho loading
+  const [isLoading, setIsLoading] = useState(false);
   const [userList, setUserList] = useState<UserType[]>([]);
   const [check, setCheck] = useState(false);
   const [reloadApi, setReloadApi] = useState(false);
   const [statusList, setStatusList] = useState<{ _id: string; name: string }[]>(
     []
   );
+
   const handleTaskClick = (task?: TaskType | null) => {
     if (task) {
       setSelectedTask(task);
       setIsTaskModalOpen(true);
-      console.log("task");
-      setCheck(false); // Reset check when clicking on a task
+      setCheck(false);
     } else {
-      console.log("Button Thêm Task được click");
       setCheck(true);
       setIsTaskModalOpen(true);
       setSelectedTask(null);
@@ -32,68 +31,32 @@ const Board: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchTasks(); // Khởi động fetchTasks khi component được render lần đầu tiên
+    fetchTasks();
   }, [reloadApi]);
 
   const fetchTasks = () => {
-    setIsLoading(true); // Bắt đầu tải dữ liệu
-    setTimeout(() => {
-      axios
-        .get("http://nmt.logit.id.vn:5005/api/v1/task/getList")
-        .then((response) => {
-          setTasks(response.data);
-          setIsLoading(false); // Dừng loading khi dữ liệu đã được tải
-          console.log("API", response);
-        })
-        .catch((error) => {
-          console.error("Error : ", error);
-          setIsLoading(false); // Dừng loading nếu có lỗi xảy ra
-        });
-    }, 1000);
+    setIsLoading(true);
+    axios
+      .get("http://nmt.logit.id.vn:5005/api/v1/task/getList")
+      .then((response) => {
+        setTasks(response.data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching tasks:", error);
+        setIsLoading(false);
+      });
   };
+
   const fetchUser = () => {
     axios
       .get("http://nmt.logit.id.vn:5005/api/v1/user/getList")
-      .then((Response) => {
-        setUserList(Response.data);
-        console.log("Data User ", Response);
+      .then((response) => {
+        setUserList(response.data);
       })
-      .catch((Error) => {
-        console.error("Lỗi User", Error);
+      .catch((error) => {
+        console.error("Error fetching users:", error);
       });
-  };
-  useEffect(() => {
-    fetchUser();
-    fetchStatus();
-  }, []);
-  useEffect(() => {
-    console.log("tasks uef: ", tasks);
-  }, [tasks]);
-  // Hàm để lưu task sau khi cập nhật
-  const handleTaskSave = async (updatedTask: TaskType) => {
-    if (check) {
-      const newTask: TaskType = updatedTask;
-
-      console.log("test", newTask);
-
-      axios({
-        url: "http://nmt.logit.id.vn:5005/api/v1/task/add",
-        method: "POST",
-        data: newTask,
-      })
-        .then((res: any) => {
-          console.log("res: ", res.data);
-        })
-        .catch((err: any) => {
-          console.log("err: ", err);
-        });
-
-      // } else {
-      // console.log("quá trình update", updatedTask);
-
-      setIsTaskModalOpen(!isTaskModalOpen);
-    }
-    setReloadApi(!reloadApi);
   };
 
   const fetchStatus = () => {
@@ -101,22 +64,90 @@ const Board: React.FC = () => {
       .get("http://nmt.logit.id.vn:5005/api/v1/status/getList")
       .then((response) => {
         setStatusList(response.data);
-        console.log("Status List: ", response.data);
       })
       .catch((error) => {
         console.error("Error fetching status:", error);
       });
   };
 
-  const handleTaskDelete = (taskId: string) => {
-    const updatedTasks = tasks.filter((task) => task._id !== taskId);
-    setTasks(updatedTasks);
+  useEffect(() => {
+    fetchUser();
+    fetchStatus();
+  }, []);
+
+  const handleTaskSave = async (updatedTask: TaskType) => {
+    try {
+      if (check) {
+        await axios.post(
+          "http://nmt.logit.id.vn:5005/api/v1/task/add",
+          updatedTask
+        );
+      } else {
+        await axios.put(
+          `http://nmt.logit.id.vn:5005/api/v1/task/update/${updatedTask._id}`,
+          updatedTask
+        );
+      }
+      setIsTaskModalOpen(false);
+      setReloadApi(!reloadApi);
+    } catch (error) {
+      console.error("Error saving task:", error);
+    }
   };
+
+  const handleTaskDelete = async (taskId: string) => {
+    try {
+      await axios.delete(
+        `http://nmt.logit.id.vn:5005/api/v1/task/delete/${taskId}`
+      );
+      setReloadApi(!reloadApi);
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+
   const handleRefresh = () => {
-    setIsLoading(true);
-    fetchTasks(); // Gọi lại hàm fetchTasks để refresh dữ liệu
+    fetchTasks();
   };
-  // Render các cột
+
+  const handleDragStart = (
+    e: React.DragEvent<HTMLDivElement>,
+    taskId: string
+  ) => {
+    e.dataTransfer.setData("taskId", taskId);
+    console.log("kéo", taskId);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, status: string) => {
+    e.preventDefault();
+    const taskId = e.dataTransfer.getData("taskId");
+    const updatedTasks = tasks.map((task) =>
+      task._id === taskId ? { ...task, status } : task
+    );
+    setTasks(updatedTasks);
+    console.log("thả", updatedTasks);
+
+    const updatedTask = updatedTasks.find((task) => task._id === taskId);
+    if (updatedTask) {
+      updateTaskStatus(updatedTask);
+    }
+  };
+
+  const updateTaskStatus = (task: TaskType) => {
+    axios
+      .put(`http://nmt.logit.id.vn:5005/api/v1/task/update/${task._id}`, task)
+      .then((response) => {
+        console.log("update task sau kéo thả:", response.data);
+      })
+      .catch((error) => {
+        console.error("Lỗi kéo thả:", error);
+      });
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
   return (
     <div className="board w-full p-6 max-w-7xl mx-auto flex flex-col items-center max-h-[650px] overflow-y-auto">
       <h1 className="board-title text-3xl font-bold mb-4">Bảng công việc</h1>
@@ -150,11 +181,13 @@ const Board: React.FC = () => {
             title={status.name}
             tasks={tasks.filter((task) => task.status === status.name)}
             onTaskClick={handleTaskClick}
+            onDragStart={handleDragStart}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
             className="bg-white p-4 rounded shadow"
           />
         ))}
       </div>
-
       {isTaskModalOpen && (
         <TaskModal
           task={

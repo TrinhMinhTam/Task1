@@ -6,13 +6,19 @@ interface ColumnProps {
   title: string;
   tasks: TaskType[];
   className?: string;
-  onTaskClick: (task: TaskType) => void;
+  onTaskClick: (task?: TaskType | null) => void;
+  onDragStart: (e: React.DragEvent<HTMLDivElement>, taskId: string) => void;
+  onDrop: (e: React.DragEvent<HTMLDivElement>, status: string) => void;
+  onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
 }
 
 const Column: React.FC<ColumnProps> = ({
   title,
   tasks,
   onTaskClick,
+  onDragStart,
+  onDrop,
+  onDragOver,
   className,
 }) => {
   const getOne = (taskId: string) => {
@@ -56,7 +62,7 @@ const Column: React.FC<ColumnProps> = ({
     switch (category) {
       case "Low":
         return "bg-orange-300 text-orange-700";
-      case "High":
+      case "Hight":
         return "bg-red-300 text-red-700";
       case "Complete":
         return "bg-green-300 text-green-700";
@@ -66,7 +72,11 @@ const Column: React.FC<ColumnProps> = ({
   };
 
   return (
-    <div className={`column ${className} flex-1 min-w-0 mr-4`}>
+    <div
+      className={`column ${className} flex-1 min-w-0 mr-4`}
+      onDrop={(e) => onDrop(e, title)}
+      onDragOver={onDragOver}
+    >
       <h2
         className={`text-lg font-bold mb-4 border-b-4 pb-2 mr-4 ${getColumnBorderColor(
           title
@@ -79,6 +89,8 @@ const Column: React.FC<ColumnProps> = ({
           key={task._id}
           className="task bg-white border border-gray-300 rounded-lg my-2 p-2 w-full flex flex-col items-start cursor-pointer"
           onClick={() => handleClickTask(task)}
+          draggable
+          onDragStart={(e) => onDragStart(e, task._id || "")}
         >
           <p
             className={`flex text-sm text-gray-700 border-solid box-border rounded-md ${getStatusColorClass(
