@@ -1,6 +1,6 @@
 import React from "react";
-import axios from "axios";
 import { TaskType } from "../Data";
+import { getAllTasks } from "./API";
 
 interface ColumnProps {
   title: string;
@@ -22,18 +22,21 @@ const Column: React.FC<ColumnProps> = ({
   className,
 }) => {
   const getOne = (taskId: string) => {
-    axios
-      .get(`http://nmt.logit.id.vn:5005/api/v1/task/getOne/${taskId}`)
-      .then((response) => {
-        if (response.data.status === true) {
-          console.log("Task details:", response.data);
-        } else {
-          console.error("Task not found or some error occurred");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching task details:", error);
-      });
+    getAllTasks(`task/getOne/${taskId}`, (response: any) => {
+      console.log("getOne", response.data);
+    });
+
+    // getTask(taskId)
+    //   .then((response) => {
+    //     if (response.data.status === true) {
+    //       console.log("Task details:", response.data);
+    //     } else {
+    //       console.error("Task not found or some error occurred");
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error fetching task details:", error);
+    //   });
   };
 
   const handleClickTask = (task: TaskType) => {

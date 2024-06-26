@@ -9,19 +9,12 @@ interface TaskProps {
   onClick: () => void;
 }
 
-const Task: React.FC<TaskProps> = ({ task, onTaskTick, onClick }) => {
+const Task: React.FC<TaskProps> = ({ task, onClick }) => {
   const [editing, setEditing] = useState(false);
   const [updatedTitle, setUpdatedTitle] = useState(task.title);
   const [selectedOption, setSelectedOption] = useState(task.status); // Sử dụng status thay vì defaultDropdownValue
 
   const handleSave = () => {
-    const updatedTask: TaskType = {
-      ...task,
-      title: updatedTitle,
-
-      status: selectedOption, // Cập nhật status thay vì defaultDropdownValue
-    };
-    // onTaskSave(updatedTask);
     setEditing(false);
   };
 

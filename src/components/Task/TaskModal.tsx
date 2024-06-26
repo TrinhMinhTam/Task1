@@ -1,7 +1,7 @@
 // TaskModal.tsx
 import React, { useState } from "react";
 import { TaskType, UserType } from "../Data";
-import axios from "axios";
+import { addTask, putTask } from "./API";
 
 interface TaskModalProps {
   task: TaskType;
@@ -22,6 +22,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   filter,
 }) => {
   const [updatedTask, setUpdatedTask] = useState<TaskType>(task);
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -33,84 +34,40 @@ const TaskModal: React.FC<TaskModalProps> = ({
       [name]: value,
     }));
   };
-  // const handleChangeOption = (
-  //   e: React.ChangeEvent<
-  //     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-  //   >
-  // ) => {
-  //   const { name, value } = e.target;
-  //   setUpdatedTask((prevState) => ({
-  //     ...prevState,
-  //     [name]: parseInt(value),
-  //   }));
-  // };
-  const handleDelete = () => {
-    axios
-      .delete(
-        `http://nmt.logit.id.vn:5005/api/v1/task/delete/${updatedTask._id}`
-      )
-      .then((response) => {
-        console.log("data", response);
-        if (response.data.status === true) {
-          console.log("Delete Task:", response);
-          if (updatedTask._id) {
-            onDelete(updatedTask._id);
-          }
-        } else {
-          console.error("Task not found or some error occurred");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching task details:", error);
-      });
-    onClose();
-  };
-  // useEffect(() => {
-  //   setNewTask({ ...task });
-  // }, [task]);
-  const handleSave = () => {
-    if (filter === "Thêm Task") {
-      console.log("add task", filter);
-      onSave(updatedTask);
+  const handleDelete = async () => {
+    if (updatedTask._id) {
+      try {
+        // delTask(`task/delete/${updatedTask._id}`, (res: any) =>
+        //   console.log("delete task modal", res.data)
+        // );
+        onDelete(updatedTask._id);
+        onClose();
+      } catch (error) {
+        console.error("Error deleting task:", error);
+      }
     } else {
-      const requestBody = updatedTask;
-      console.log("test update", requestBody);
-      // axios
-      //   .put(
-      //     `http://nmt.logit.id.vn:5005/api/v1/task/update/${updatedTask._id}`,
-      //     requestBody
-      //   )
-      //   .then((response) => {
-      //     console.log("Update Task Response:", response);
-      //     // Kiểm tra xem response có thành công hay không và thực hiện các xử lý phù hợp
-      //     if (response.data.status === true) {
-      //       onSave(updatedTask);
-      //     } else {
-      //       console.error("Update Task failed:", response.data.message);
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     console.error("Error updating task:", error);
-      //   });
-      axios({
-        url: `http://nmt.logit.id.vn:5005/api/v1/task/update/${updatedTask._id}`,
-        method: "PUT",
-        data: requestBody,
-      })
-        .then((res) => {
-          console.log("res: ", res.data);
+      console.error("Task ID is undefined");
+    }
+  };
 
-          if (res.data.status === true) {
-            onSave(updatedTask);
-          } else {
-            console.error("err update", res.data.message);
-          }
-        })
-        .catch((err) => {
-          console.log("err", err);
+  const handleSave = async () => {
+    try {
+      if (filter === "Thêm Task") {
+        // console.log("add task", filter);
+        // addTask("task/add", updatedTask, (res: any) => {
+        //   console.log("Add Task:", res);
+        // onSave(updatedTask);
+        // };
+      } else {
+        console.log("update task", updatedTask);
+        putTask(`task/update/${updatedTask._id}`, updatedTask, (res: any) => {
+          console.log("Update Task:", res.data);
         });
-
+      }
+      onSave(updatedTask);
       onClose();
+    } catch (error) {
+      console.error("Error saving task:", error);
     }
   };
 
@@ -141,7 +98,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
           >
             <option value="Low">Low</option>
-            <option value="High">Hight</option>
+            <option value="Hight">Hight</option>
             <option value="Complete">Complete</option>
           </select>
         </label>

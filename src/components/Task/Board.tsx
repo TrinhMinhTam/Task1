@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import Column from "./Column";
 import { TaskType, UserType } from "../Data";
 import TaskModal from "./TaskModal";
-import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { addTask, delTask, getAllTasks, putTask } from "./API";
 
 const Board: React.FC = () => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
@@ -33,63 +33,72 @@ const Board: React.FC = () => {
   useEffect(() => {
     fetchTasks();
   }, [reloadApi]);
-
-  const fetchTasks = () => {
-    setIsLoading(true);
-    axios
-      .get("http://nmt.logit.id.vn:5005/api/v1/task/getList")
-      .then((response) => {
-        setTasks(response.data);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching tasks:", error);
-        setIsLoading(false);
-      });
-  };
-
-  const fetchUser = () => {
-    axios
-      .get("http://nmt.logit.id.vn:5005/api/v1/user/getList")
-      .then((response) => {
-        setUserList(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching users:", error);
-      });
-  };
-
-  const fetchStatus = () => {
-    axios
-      .get("http://nmt.logit.id.vn:5005/api/v1/status/getList")
-      .then((response) => {
-        setStatusList(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching status:", error);
-      });
-  };
-
   useEffect(() => {
     fetchUser();
     fetchStatus();
   }, []);
+  const fetchTasks = () => {
+    setIsLoading(true);
+    getAllTasks("task/getList", (response: any) => {
+      console.log("res", response.data);
+      setTasks(response.data);
+    });
+    setIsLoading(false);
+  };
+
+  const fetchUser = () => {
+    getAllTasks("user/getList", (response: any) => {
+      console.log("user", response.data);
+      setUserList(response.data);
+    });
+    // getUsers()
+    //   .then((response) => {
+    //
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error fetching users:", error);
+    //   });
+  };
+
+  const fetchStatus = () => {
+    getAllTasks("status/getList", (response: any) => {
+      console.log("status", response.data);
+      setStatusList(response.data);
+    });
+    // getStatuses()
+    //   .then((response) => {
+    //     setStatusList(response.data);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error fetching status:", error);
+    //   });
+  };
+
+  // useEffect(() => {}, []);
 
   const handleTaskSave = async (updatedTask: TaskType) => {
     try {
       if (check) {
-        await axios.post(
-          "http://nmt.logit.id.vn:5005/api/v1/task/add",
-          updatedTask
-        );
+        addTask(`task/add`, updatedTask, (res: any) => {
+          console.log("add task", res.data);
+          setReloadApi(!reloadApi);
+          // });
+          // await axios.post(
+          //   "http://nmt.logit.id.vn:5005/api/v1/task/add",
+          //   updatedTask
+        });
       } else {
-        await axios.put(
-          `http://nmt.logit.id.vn:5005/api/v1/task/update/${updatedTask._id}`,
-          updatedTask
-        );
+        putTask(`task/update/${updatedTask._id}`, updatedTask, (res: any) => {
+          console.log("update task", res);
+          setReloadApi(!reloadApi);
+        });
+
+        // await axios.put(
+        //   `http://nmt.logit.id.vn:5005/api/v1/task/update/${updatedTask._id}`,
+        //   updatedTask
+        // );
       }
       setIsTaskModalOpen(false);
-      setReloadApi(!reloadApi);
     } catch (error) {
       console.error("Error saving task:", error);
     }
@@ -97,10 +106,10 @@ const Board: React.FC = () => {
 
   const handleTaskDelete = async (taskId: string) => {
     try {
-      await axios.delete(
-        `http://nmt.logit.id.vn:5005/api/v1/task/delete/${taskId}`
-      );
-      setReloadApi(!reloadApi);
+      delTask(`task/delete/${taskId}`, (response: any) => {
+        console.log("delete task", response.data);
+        setReloadApi(!reloadApi);
+      });
     } catch (error) {
       console.error("Error deleting task:", error);
     }
@@ -127,22 +136,21 @@ const Board: React.FC = () => {
     setTasks(updatedTasks);
     console.log("thả", updatedTasks);
 
-    const updatedTask = updatedTasks.find((task) => task._id === taskId);
-    if (updatedTask) {
-      updateTaskStatus(updatedTask);
-    }
+    // const updatedTask = updatedTasks.find((task) => task._id === taskId);
+    // if (updatedTask) {
+    //   updateTaskStatus(updatedTask);
+    // }
   };
 
-  const updateTaskStatus = (task: TaskType) => {
-    axios
-      .put(`http://nmt.logit.id.vn:5005/api/v1/task/update/${task._id}`, task)
-      .then((response) => {
-        console.log("update task sau kéo thả:", response.data);
-      })
-      .catch((error) => {
-        console.error("Lỗi kéo thả:", error);
-      });
-  };
+  // const updateTaskStatus = (task: TaskType) => {
+  //   updateTask(task._id, task)
+  //     .then((response) => {
+  //       console.log("update task sau kéo thả:", response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Lỗi kéo thả:", error);
+  //     });
+  // };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
