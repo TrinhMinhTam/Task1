@@ -25,18 +25,6 @@ const Column: React.FC<ColumnProps> = ({
     getAllTasks(`task/getOne/${taskId}`, (response: any) => {
       console.log("getOne", response.data);
     });
-
-    // getTask(taskId)
-    //   .then((response) => {
-    //     if (response.data.status === true) {
-    //       console.log("Task details:", response.data);
-    //     } else {
-    //       console.error("Task not found or some error occurred");
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error fetching task details:", error);
-    //   });
   };
 
   const handleClickTask = (task: TaskType) => {

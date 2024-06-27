@@ -3,8 +3,6 @@ import { TaskType } from "../Data";
 
 interface TaskProps {
   task: TaskType;
-  // onTaskMove: (newStatus: string) => void;
-  // onTaskSave: (updatedTask: TaskType) => void;
   onTaskTick?: () => void;
   onClick: () => void;
 }
@@ -20,12 +18,12 @@ const Task: React.FC<TaskProps> = ({ task, onClick }) => {
 
   const handleCancel = () => {
     setUpdatedTitle(task.title);
-    setSelectedOption(task.status); // Đặt lại status khi huỷ chỉnh sửa
+    setSelectedOption(task.status);
     setEditing(false);
   };
   const handleClick = () => {
     if (onClick) {
-      onClick(); // Gọi hàm onClick nếu nó được truyền vào
+      onClick();
     }
   };
 

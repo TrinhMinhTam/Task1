@@ -1,14 +1,12 @@
-// TaskModal.tsx
 import React, { useState } from "react";
 import { TaskType, UserType } from "../Data";
-import { addTask, putTask } from "./API";
 
 interface TaskModalProps {
   task: TaskType;
   onMove?: (newColumnIndex: number) => void;
   onClose: () => void;
   onSave: (updatedTask: TaskType) => void;
-  onDelete: (taskId: string) => void; // Thêm prop onDelete
+  onDelete: (taskId: string) => void;
   userList: UserType[];
   filter?: string;
 }
@@ -37,9 +35,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const handleDelete = async () => {
     if (updatedTask._id) {
       try {
-        // delTask(`task/delete/${updatedTask._id}`, (res: any) =>
-        //   console.log("delete task modal", res.data)
-        // );
         onDelete(updatedTask._id);
         onClose();
       } catch (error) {
@@ -53,16 +48,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const handleSave = async () => {
     try {
       if (filter === "Thêm Task") {
-        // console.log("add task", filter);
-        // addTask("task/add", updatedTask, (res: any) => {
-        //   console.log("Add Task:", res);
-        // onSave(updatedTask);
-        // };
+        console.log("Add Task:", filter);
       } else {
         console.log("update task", updatedTask);
-        putTask(`task/update/${updatedTask._id}`, updatedTask, (res: any) => {
-          console.log("Update Task:", res.data);
-        });
       }
       onSave(updatedTask);
       onClose();

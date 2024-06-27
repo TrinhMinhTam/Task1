@@ -1,7 +1,6 @@
 export interface TaskType {
   userId: number;
   _id?: string;
-  // id: number;
   title: string;
   status: string;
   category: string;
@@ -17,4 +16,5 @@ export interface UserType {
   id: number;
   username: string;
   email: string;
+  password?: string;
 }

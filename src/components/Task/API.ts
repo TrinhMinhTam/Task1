@@ -24,7 +24,7 @@ export const putTask = (
   return axios
     .put(api, data)
     .then((response) => {
-      callback(response.data); // Gọi callback với dữ liệu từ phản hồi
+      callback(response.data);
     })
     .catch((error) => {
       console.error("Error putting task:", error);
