@@ -5,7 +5,7 @@ import Board from "./components/Task/Board.tsx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./index.css";
 import UserComponent from "./components/User/User.tsx";
-import Login from "./components/Accout/Login.tsx";
+import Login from "./components/Account/Login.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

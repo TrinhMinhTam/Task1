@@ -92,7 +92,7 @@ const Login: React.FC = () => {
               </>
             )}
             {showForgotPassword && (
-              <div className="flex items-center">
+              <div className="flex items-center mr-10">
                 <svg
                   className="h-8 w-8 text-gray-500 cursor-pointer"
                   fill="none"
@@ -107,7 +107,7 @@ const Login: React.FC = () => {
                     d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
                   />
                 </svg>
-                <p className="text-2xl text-black font-bold ml-2">
+                <p className="text-2xl text-black font-bold ml-20">
                   Forgot Password
                 </p>
               </div>
@@ -151,7 +151,7 @@ const Login: React.FC = () => {
                   Email
                 </label>
                 <input
-                  type="text"
+                  type="email"
                   name="email"
                   id="email"
                   value={email}
@@ -225,7 +225,7 @@ const Login: React.FC = () => {
                   />
                   <label
                     htmlFor="confirm-passcode"
-                    className="block text-sm font-medium text-gray-500"
+                    className="block text-sm font-medium mt-7 text-gray-500"
                   >
                     Confirm Password
                   </label>
