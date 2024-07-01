@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { UserType } from "../Data";
-import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import Layout from "../../App";
+import { getAllTasks } from "../Task/API";
 
 const UserComponent: React.FC = () => {
   const [userList, setUserList] = useState<UserType[]>([]);
@@ -12,17 +12,11 @@ const UserComponent: React.FC = () => {
   const fetchUser = () => {
     setIsLoading(true);
     setTimeout(() => {
-      axios
-        .get("http://nmt.logit.id.vn:5005/api/v1/user/getList")
-        .then((Response) => {
-          setUserList(Response.data);
-          setIsLoading(false);
-          console.log("Data User ", Response);
-        })
-        .catch((Error) => {
-          setIsLoading(false);
-          console.error("Lỗi User", Error);
-        });
+      getAllTasks("user/getList", (response: any) => {
+        console.log("user", response.data);
+        setUserList(response.data);
+        setIsLoading(false);
+      });
     }, 1000);
   };
   useEffect(() => {

@@ -13,7 +13,7 @@ export interface ColumnType {
   status: string;
 }
 export interface UserType {
-  id: number;
+  _id: string;
   username: string;
   email: string;
   password?: string;

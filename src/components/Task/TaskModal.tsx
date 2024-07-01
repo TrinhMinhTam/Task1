@@ -3,7 +3,6 @@ import { TaskType, UserType } from "../Data";
 
 interface TaskModalProps {
   task: TaskType;
-  onMove?: (newColumnIndex: number) => void;
   onClose: () => void;
   onSave: (updatedTask: TaskType) => void;
   onDelete: (taskId: string) => void;
@@ -20,6 +19,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
   filter,
 }) => {
   const [updatedTask, setUpdatedTask] = useState<TaskType>(task);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string>(
+    task.image || ""
+  );
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -31,6 +33,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
       ...prevState,
       [name]: value,
     }));
+    if (name === "image") {
+      setImagePreviewUrl(value);
+    }
   };
   const handleDelete = async () => {
     if (updatedTask._id) {
@@ -47,11 +52,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   const handleSave = async () => {
     try {
-      if (filter === "Thêm Task") {
-        console.log("Add Task:", filter);
-      } else {
-        console.log("update task", updatedTask);
-      }
       onSave(updatedTask);
       onClose();
     } catch (error) {
@@ -69,9 +69,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">
-            {filter === "Thêm Task" ? "Thêm Task" : "Chỉnh sửa Task"}
-          </h2>
+          <h2 className="text-xl font-semibold">{filter}</h2>
           <span className="cursor-pointer text-gray-500" onClick={onClose}>
             &times;
           </span>
@@ -121,6 +119,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
             onChange={handleChange}
             className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
           />
+          {imagePreviewUrl && (
+            <div className="flex mt-2 justify-center">
+              <img
+                src={imagePreviewUrl}
+                alt="Image Preview"
+                className="w-1/2"
+              />
+            </div>
+          )}
         </label>
 
         <label className="block text-left mb-2 font-medium">
@@ -132,7 +139,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
           >
             {userList.map((user) => (
-              <option key={user.id} value={user.id}>
+              <option key={user._id} value={user._id}>
                 {user.username} ({user.email})
               </option>
             ))}

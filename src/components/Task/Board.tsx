@@ -91,10 +91,6 @@ const Board: React.FC = () => {
     }
   };
 
-  const handleRefresh = () => {
-    fetchTasks();
-  };
-
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     taskId: string
@@ -132,7 +128,7 @@ const Board: React.FC = () => {
               Thêm Task
             </button>
             <button
-              onClick={handleRefresh}
+              onClick={fetchTasks}
               className="refresh-btn bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700"
             >
               Refresh
@@ -177,7 +173,7 @@ const Board: React.FC = () => {
               onSave={handleTaskSave}
               onDelete={handleTaskDelete}
               userList={userList}
-              filter={check ? "Thêm Task" : ""}
+              filter={check ? "Thêm Task" : "Chỉnh sửa Task"}
             />
           )}
         </div>

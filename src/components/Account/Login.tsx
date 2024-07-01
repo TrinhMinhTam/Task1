@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAllTasks } from "../Task/API";
+import { UserType } from "../Data";
 
 const Login: React.FC = () => {
   const [showLoginForm, setShowLoginForm] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [icon, setIcon] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
+  const [useList, setUserList] = useState<UserType[]>([]);
 
   const toggleForm = (isLogin: boolean) => {
     setShowLoginForm(isLogin);
@@ -19,24 +21,38 @@ const Login: React.FC = () => {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
-    setIcon(!icon);
   };
 
+  const fetchUser = () => {
+    getAllTasks("user/getList", (response: any) => {
+      console.log("user", response.data);
+      setUserList(response.data);
+    });
+  };
+  useEffect(() => {
+    fetchUser();
+  }, []);
   const handleLogin = (event: React.FormEvent) => {
     event.preventDefault();
-    if (email !== "" && password !== "") {
-      console.log("Logging in...");
+
+    const foundAccount = useList.find(
+      (useList) => useList.email === email && useList.username === password
+    );
+    console.log("email", foundAccount);
+
+    if (foundAccount) {
+      console.log("đúng");
       navigate("/board");
     } else {
-      console.log("Please enter email and password.");
+      console.log(" sai");
     }
   };
 
   const handleSignUp = (event: React.FormEvent) => {
     event.preventDefault();
-    if (password === confirmPassword && email !== "" && password !== "") {
+    if (password === confirmPassword && email == "" && password == "") {
       console.log("email đăng kí: ", email, " password: ", password);
-      setShowLoginForm(true);
+      // setShowLoginForm(true);
     } else {
       console.log("Passwords do not match or fields are empty.");
     }
@@ -123,7 +139,7 @@ const Login: React.FC = () => {
                   Enter your email to reset password
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   name="email"
                   id="email"
                   value={email}
@@ -145,13 +161,13 @@ const Login: React.FC = () => {
             >
               <div>
                 <label
-                  htmlFor="email"
+                  htmlFor="text"
                   className="block text-sm font-medium text-gray-500"
                 >
                   Email
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   name="email"
                   id="email"
                   value={email}
@@ -182,7 +198,7 @@ const Login: React.FC = () => {
                     stroke="currentColor"
                     onClick={togglePasswordVisibility}
                   >
-                    {icon ? (
+                    {showPassword ? (
                       <>
                         <path
                           strokeLinecap="round"
@@ -244,7 +260,7 @@ const Login: React.FC = () => {
                     stroke="currentColor"
                     onClick={togglePasswordVisibility}
                   >
-                    {icon ? (
+                    {showPassword ? (
                       <>
                         <path
                           strokeLinecap="round"
